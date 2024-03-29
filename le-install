@@ -18,13 +18,14 @@ install_cert_to() {
         TARGET_HOST="$(echo -n "${TARGET_HOST}" | cut -d':' -f1)"
     fi
 
-    CERT_DATA="$(tar -zcv --owner=0 --group=0 -C "${CERTS_DIR}" . | base64)"
+    CERT_DATA="$(tar -zc --owner=0 --group=0 -C "${CERTS_DIR}" . | base64)"
     ssh "${SSH_CMD[@]}" "${TARGET_HOST}" /bin/sh <<EOF
         mkdir -p "${CERTS_DIR}"
-        echo "${CERT_DATA}" | base64 -d | tar zxv -C "${CERTS_DIR}"
+        echo "${CERT_DATA}" | base64 -d | tar zx -C "${CERTS_DIR}"
 
         # nginx
         if command -v nginx >/dev/null; then
+            echo 'Reload nginx...'
             command nginx -t && command nginx -s reload
         fi
 EOF
