@@ -17,7 +17,7 @@ function register() {
 
     install -d "${CERT_BASE_DIR}/"
 
-    acme.sh --install-cert -d "$DOMAIN_NAME" \
+    /opt/le-install/acme.sh --install-cert -d "$DOMAIN_NAME" \
         --key-file "${CERT_BASE_DIR}/key.pem" \
         --cert-file "${CERT_BASE_DIR}/cert.pem" \
         --fullchain-file "${CERT_BASE_DIR}/fullchain.pem" \
