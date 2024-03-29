@@ -17,11 +17,13 @@ function register() {
 
     install -d "${CERT_BASE_DIR}/"
 
+    local TARGET_HOSTS=("${@:2}")
+    local RELOAD_CMD="/opt/le-install/le-install '${FILENAME}' ${TARGET_HOSTS[@]@Q}"
     /opt/le-install/acme.sh --install-cert -d "$DOMAIN_NAME" \
         --key-file "${CERT_BASE_DIR}/key.pem" \
         --cert-file "${CERT_BASE_DIR}/cert.pem" \
         --fullchain-file "${CERT_BASE_DIR}/fullchain.pem" \
-        --reloadcmd "/opt/le-install/le-install '${FILENAME}' ${@:2}"
+        --reloadcmd "${RELOAD_CMD}"
 }
 
 register "${@}"

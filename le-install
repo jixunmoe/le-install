@@ -19,7 +19,7 @@ install_cert_to() {
     fi
 
     CERT_DATA="$(tar -zc --owner=0 --group=0 -C "${CERTS_DIR}" . | base64)"
-    ssh "${SSH_CMD[@]}" "${TARGET_HOST}" /bin/sh <<EOF
+    ssh -T "${SSH_CMD[@]}" "${TARGET_HOST}" /bin/sh <<EOF
         mkdir -p "${CERTS_DIR}"
         echo "${CERT_DATA}" | base64 -d | tar zx -C "${CERTS_DIR}"
 
