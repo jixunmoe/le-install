@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+# verbose logging, remove the following:
+# set -x
+
+install_cert_to() {
+    local CERTS_DIR="/var/lib/acme.sh/certs/${1}"
+
+    local TARGET_HOST="$2"
+    local SSH_CMD=()
+    local SSH_PORT=22
+    local CERT_DATA=""
+
+    SSH_PORT="$(echo -n "${TARGET_HOST}" | cut -d':' -f2)"
+    if [[ -n "$SSH_PORT" ]]; then
+        SSH_CMD+=("-p" "${SSH_PORT}")
+        TARGET_HOST="$(echo -n "${TARGET_HOST}" | cut -d':' -f1)"
+    fi
+
+    CERT_DATA="$(tar -zcv --owner=0 --group=0 -C "${CERTS_DIR}" . | base64)"
+    ssh "${SSH_CMD[@]}" "${TARGET_HOST}" /bin/sh <<EOF
+        mkdir -p "${CERTS_DIR}"
+        echo "${CERT_DATA}" | base64 -d | tar zxv -C "${CERTS_DIR}"
+
+        # nginx
+        if command -v nginx >/dev/null; then
+            command nginx -t && command nginx -s reload
+        fi
+EOF
+}
+
+for NEXT_HOSTNAME in "${@:2}"; do
+    install_cert_to "$1" "${NEXT_HOSTNAME}"
+done

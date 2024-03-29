@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+# verbose logging, remove the following:
+# set -x
+
+function register() {
+    local DOMAIN_NAME="$1"
+    local FILENAME="${DOMAIN_NAME}"
+    local CERT_BASE_DIR=""
+
+    if [[ "${DOMAIN_NAME:0:2}" = '*.' ]]; then
+        DOMAIN_NAME="${DOMAIN_NAME:2}"
+        FILENAME="wildcard.$DOMAIN_NAME"
+    fi
+    CERT_BASE_DIR="/var/lib/acme.sh/certs/${FILENAME}"
+
+    install -d "${CERT_BASE_DIR}/"
+
+    acme.sh --install-cert -d "$DOMAIN_NAME" \
+        --key-file "${CERT_BASE_DIR}/key.pem" \
+        --cert-file "${CERT_BASE_DIR}/cert.pem" \
+        --fullchain-file "${CERT_BASE_DIR}/fullchain.pem" \
+        --reloadcmd "/opt/le-install/le-install '${FILENAME}' ${@:2}"
+}
+
+register "${@}"
