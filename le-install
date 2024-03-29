@@ -12,7 +12,7 @@ install_cert_to() {
     local SSH_PORT=22
     local CERT_DATA=""
 
-    SSH_PORT="$(echo -n "${TARGET_HOST}" | cut -d':' -f2)"
+    SSH_PORT="$(echo -n "${TARGET_HOST}" | cut -s -d':' -f2)"
     if [[ -n "$SSH_PORT" ]]; then
         SSH_CMD+=("-p" "${SSH_PORT}")
         TARGET_HOST="$(echo -n "${TARGET_HOST}" | cut -d':' -f1)"
