@@ -23,10 +23,15 @@ install_cert_to() {
         mkdir -p "${CERTS_DIR}"
         echo "${CERT_DATA}" | base64 -d | tar zx -C "${CERTS_DIR}"
 
+        SUDO=""
+        if [ "\$(id -u)" -ne 0 ]; then
+            SUDO="sudo"
+        fi
+
         # nginx
         if command -v nginx >/dev/null; then
             echo 'Reload nginx...'
-            command nginx -t && command nginx -s reload
+            command \$SUDO nginx -t && command \$SUDO nginx -s reload
         fi
 EOF
 }
